@@ -1,8 +1,11 @@
-const express =require ('express');
-const bodyParser= require('body-parser')
-const app =express();
+const express =require ('express');   //run express
+const bodyParser= require('body-parser')  //to get the inputs
+const app =express();  //run express
 const MongoClient = require('mongodb').MongoClient
-app.set('view engine', 'ejs')
+app.set('view engine', 'ejs');
+app.use(express.static('public')); //to let express read from public
+app.use(bodyParser.json()) // to let express read json
+
 
 var db
 
@@ -48,9 +51,30 @@ app.post('/quotes', (req, res) => {
   })
 })
 
+app.put('/quotes', (req, res) => {
+  db.collection('quotes')
+  .findOneAndUpdate({name: 'Yoda'}, {
+    $set: {
+      name: req.body.name,
+      quote: req.body.quote
+    }
+  }, {
+    sort: {_id: -1},
+    upsert: true
+  }, (err, result) => {
+    if (err) return res.send(err)
+    res.send(result)
+  })
+})
 
 
-
+/*db.collections('quotes').findOneAndUpdate(
+  query, 
+  update, 
+  options,
+  callback
+)
+*/
 
 
 
